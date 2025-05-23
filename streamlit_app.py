@@ -119,15 +119,34 @@ if page == "Rekomendasi Makanan":
         good_foods, avoid_foods = get_food_recommendations(age, gender, activity_level, weight)
         efek_baik, risiko = generate_effects(good_foods, avoid_foods)
 
-        # Rekomendasi
-        st.subheader("✔❤ Makanan yang Direkomendasikan:")
-        total_recommended_grams = sum(good_foods.values())
-        recommended_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in good_foods.items()])
-        recommended_html += f"<br><b>Total konsumsi yang disarankan: {total_recommended_grams} gram/ml</b>"
+        # Estimasi kebutuhan kalori harian
+        if gender == "Pria":
+            bmr = 10 * weight + 6.25 * 170 - 5 * age + 5  # asumsi tinggi badan 170 cm
+        else:
+            bmr = 10 * weight + 6.25 * 160 - 5 * age - 161  # asumsi tinggi badan 160 cm
 
+        if activity_level == "Rendah":
+            kebutuhan_kalori = bmr * 1.2
+        elif activity_level == "Sedang":
+            kebutuhan_kalori = bmr * 1.55
+        else:
+            kebutuhan_kalori = bmr * 1.725
+
+        st.subheader("🔥 Kebutuhan Kalori Harian Anda")
         st.markdown(
             f"""
-            <div style="background-color: rgba(255, 0, 0, 0.3); padding: 15px; border-radius: 10px; color: white;">
+            <div style="background-color: rgba(255, 165, 0, 0.3); padding: 15px; border-radius: 10px; color: black;">
+                Perkiraan kebutuhan energi Anda adalah <b>{int(kebutuhan_kalori)} kalori per hari</b> berdasarkan informasi yang Anda masukkan.
+            </div>
+            """, unsafe_allow_html=True
+        )
+
+        # Rekomendasi
+        st.subheader("✔❤ Makanan yang Direkomendasikan:")
+        recommended_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in good_foods.items()])
+        st.markdown(
+            f"""
+            <div style="background-color: rgba(0, 102, 204, 0.2); padding: 15px; border-radius: 10px; color: black;">
                 {recommended_html}
             </div>
             """, unsafe_allow_html=True
@@ -135,13 +154,10 @@ if page == "Rekomendasi Makanan":
 
         # Hindari
         st.subheader("❌💔 Makanan yang Sebaiknya Dihindari:")
-        total_avoid_grams = sum(avoid_foods.values())
         avoid_html = "".join([f"- {food}: <b>{gram} gram</b><br>" for food, gram in avoid_foods.items()])
-        avoid_html += f"<br><b>Total konsumsi yang perlu dibatasi: {total_avoid_grams} gram/ml</b>"
-
         st.markdown(
             f"""
-            <div style="background-color: rgba(180, 0, 0, 0.4); padding: 15px; border-radius: 10px; color: white;">
+            <div style="background-color: rgba(255, 0, 0, 0.2); padding: 15px; border-radius: 10px; color: black;">
                 {avoid_html}
             </div>
             """, unsafe_allow_html=True
@@ -152,7 +168,7 @@ if page == "Rekomendasi Makanan":
             st.subheader("🌿 Efek Baik Jika Mengonsumsi Makanan yang Direkomendasikan:")
             st.markdown(
                 f"""
-                <div style="background-color: rgba(0, 153, 76, 0.4); padding: 15px; border-radius: 10px; color: white;">
+                <div style="background-color: rgba(0, 153, 76, 0.2); padding: 15px; border-radius: 10px; color: black;">
                     {"<br>".join(["- " + item for item in efek_baik])}
                 </div>
                 """,
@@ -164,7 +180,7 @@ if page == "Rekomendasi Makanan":
             st.subheader("⚠️ Risiko Jika Tidak Menghindari Makanan Tersebut:")
             st.markdown(
                 f"""
-                <div style="background-color: rgba(0, 153, 76, 0.4); padding: 15px; border-radius: 10px; color: white;">
+                <div style="background-color: rgba(255, 204, 0, 0.2); padding: 15px; border-radius: 10px; color: black;">
                     {"<br>".join(["- " + item for item in risiko])}
                 </div>
                 """,
